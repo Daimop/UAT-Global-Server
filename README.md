@@ -92,6 +92,11 @@ uninstall whatever python version you have
 winget install -e --id Python.Python.3.10
 
 pip install -r requirements.txt
+
+cd UAT-Global-Server\web
+npm run build
+cd ..
+python main.py
 ```
 
 After that you can just:
