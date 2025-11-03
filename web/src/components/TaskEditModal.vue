@@ -41,19 +41,55 @@
                 </div>
                 <div class="col">
                   <div class="form-group">
-                    <label for="selectUmamusume">Uma Musume Selection</label>
-                    <select disabled class="form-control" id="selectUmamusume">
-                      <option value=1>Use Last Selection</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-group">
                     <label for="selectAutoRecoverTP">Auto-recover when TP is low</label>
                     <select v-model="recoverTP" class="form-control" id="selectAutoRecoverTP">
                       <option :value="0">Don't auto-recover</option>
                       <option :value="1">When TP low, use TP (if available)</option>
                       <option :value="2">When TP low, use TP or carrots</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="form-check">
+                    <input type="checkbox" v-model="useLegacyPreset" class="form-check-input" id="checkUseLegacyPreset">
+                    <label class="form-check-label" for="checkUseLegacyPreset">
+                      Use Legacy Preset (Manual Uma Selection)
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="row" v-if="useLegacyPreset">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="selectLegacyUma1">Legacy 1</label>
+                    <select v-model.number="legacyUmaPosition1" class="form-control" id="selectLegacyUma1">
+                      <option :value="1">UMA 1</option>
+                      <option :value="2">UMA 2</option>
+                      <option :value="3">UMA 3</option>
+                      <option :value="4">UMA 4</option>
+                      <option :value="5">UMA 5</option>
+                      <option :value="6">UMA 6</option>
+                      <option :value="7">UMA 7</option>
+                      <option :value="8">UMA 8</option>
+                      <option :value="9">UMA 9</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group">
+                    <label for="selectLegacyUma2">Legacy 2</label>
+                    <select v-model.number="legacyUmaPosition2" class="form-control" id="selectLegacyUma2">
+                      <option :value="1">UMA 1</option>
+                      <option :value="2">UMA 2</option>
+                      <option :value="3">UMA 3</option>
+                      <option :value="4">UMA 4</option>
+                      <option :value="5">UMA 5</option>
+                      <option :value="6">UMA 6</option>
+                      <option :value="7">UMA 7</option>
+                      <option :value="8">UMA 8</option>
+                      <option :value="9">UMA 9</option>
                     </select>
                   </div>
                 </div>
@@ -1312,6 +1348,14 @@ export default {
       learnSkillThreshold: 9999,
       cureAsapConditions: 'Migraine,Night Owl,Skin Outbreak,Slacker,Slow Metabolism,(Practice poor isn\'t worth a turn to cure)',
       recoverTP: 0,
+      useLegacyPreset: false,
+      legacyUmaPosition1: 1,
+      legacyUmaPosition2: 2,
+      legacyUmaPosition3: 3,
+      legacyUmaPosition4: 4,
+      legacyUmaPosition5: 5,
+      legacyUmaPosition6: 6,
+      legacyUmaPosition7: 7,
       presetNameEdit: "",
       presetAction: null,
       overwritePresetName: "",
@@ -1327,6 +1371,9 @@ export default {
       motivationThresholdYear2: 4,
       motivationThresholdYear3: 4,
       prioritizeRecreation: false,
+
+      // Preset Uma Position Selection
+      presetUmaPosition: 0,  // 0 = auto-select (legacy), 1 = position 1, 2 = position 2
 
       // URA配置
       skillEventWeight: [0, 0, 0],
@@ -2041,6 +2088,14 @@ export default {
           "allow_recover_tp": this.recoverTP,
           "rest_treshold": this.restTreshold,
           "compensate_failure": this.compensateFailure,
+          "use_legacy_preset": this.useLegacyPreset,
+          "legacy_uma_position_1": this.legacyUmaPosition1,
+          "legacy_uma_position_2": this.legacyUmaPosition2,
+          "legacy_uma_position_3": this.legacyUmaPosition3,
+          "legacy_uma_position_4": this.legacyUmaPosition4,
+          "legacy_uma_position_5": this.legacyUmaPosition5,
+          "legacy_uma_position_6": this.legacyUmaPosition6,
+          "legacy_uma_position_7": this.legacyUmaPosition7,
           "learn_skill_only_user_provided": this.learnSkillOnlyUserProvided,
           "extra_weight": [this.extraWeight1, this.extraWeight2, this.extraWeight3, this.extraWeightSummer],
           "score_value": [
@@ -2054,6 +2109,8 @@ export default {
           "motivation_threshold_year2": this.motivationThresholdYear2,
           "motivation_threshold_year3": this.motivationThresholdYear3,
           "prioritize_recreation": this.prioritizeRecreation,
+          // Preset Uma Position Selection
+          "preset_uma_position": this.presetUmaPosition,
           // 限时: 富士奇石的表演秀
           "fujikiseki_show_mode": this.fujikisekiShowMode,
           "fujikiseki_show_difficulty": this.fujikisekiShowDifficulty,
@@ -2098,6 +2155,14 @@ export default {
         this.clockUseLimit = this.presetsUse.clock_use_limit,
         this.restTreshold = (this.presetsUse.rest_treshold || this.presetsUse.fast_path_energy_limit || 48),
       this.compensateFailure = (this.presetsUse.compensate_failure !== false)
+      this.useLegacyPreset = (this.presetsUse.use_legacy_preset === true)
+      this.legacyUmaPosition1 = parseInt(this.presetsUse.legacy_uma_position_1) || 1
+      this.legacyUmaPosition2 = parseInt(this.presetsUse.legacy_uma_position_2) || 2
+      this.legacyUmaPosition3 = parseInt(this.presetsUse.legacy_uma_position_3) || 3
+      this.legacyUmaPosition4 = parseInt(this.presetsUse.legacy_uma_position_4) || 4
+      this.legacyUmaPosition5 = parseInt(this.presetsUse.legacy_uma_position_5) || 5
+      this.legacyUmaPosition6 = parseInt(this.presetsUse.legacy_uma_position_6) || 6
+      this.legacyUmaPosition7 = parseInt(this.presetsUse.legacy_uma_position_7) || 7
         this.learnSkillThreshold = this.presetsUse.learn_skill_threshold,
         this.selectedRaceTactic1 = this.presetsUse.race_tactic_1,
         this.selectedRaceTactic2 = this.presetsUse.race_tactic_2,
@@ -2109,6 +2174,8 @@ export default {
       this.motivationThresholdYear2 = parseInt(this.presetsUse.motivation_threshold_year2) || 4
       this.motivationThresholdYear3 = parseInt(this.presetsUse.motivation_threshold_year3) || 4
       this.prioritizeRecreation = this.presetsUse.prioritize_recreation || false
+      // Load preset uma position (with default)
+      this.presetUmaPosition = parseInt(this.presetsUse.preset_uma_position) || 0
       if ('event_overrides' in this.presetsUse && this.presetsUse.event_overrides) {
         this.eventChoicesSelected = { ...this.presetsUse.event_overrides }
       } else {
@@ -2278,6 +2345,14 @@ export default {
         name: this.presetNameEdit,
         event_overrides: this.buildEventChoices(),
         compensate_failure: this.compensateFailure,
+        use_legacy_preset: this.useLegacyPreset,
+        legacy_uma_position_1: this.legacyUmaPosition1,
+        legacy_uma_position_2: this.legacyUmaPosition2,
+        legacy_uma_position_3: this.legacyUmaPosition3,
+        legacy_uma_position_4: this.legacyUmaPosition4,
+        legacy_uma_position_5: this.legacyUmaPosition5,
+        legacy_uma_position_6: this.legacyUmaPosition6,
+        legacy_uma_position_7: this.legacyUmaPosition7,
         scenario: this.selectedScenario,
         race_list: this.extraRace,
         skill_priority_list: skill_priority_list,
@@ -2309,6 +2384,8 @@ export default {
         motivation_threshold_year2: this.motivationThresholdYear2,
         motivation_threshold_year3: this.motivationThresholdYear3,
         prioritize_recreation: this.prioritizeRecreation,
+        // Preset Uma Position Selection
+        preset_uma_position: this.presetUmaPosition,
         // New skill system data
         selectedSkills: [...this.selectedSkills],
         blacklistedSkills: [...this.blacklistedSkills],

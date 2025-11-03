@@ -28,6 +28,14 @@ class TaskDetail:
     prioritize_recreation: bool
     score_value: list
     compensate_failure: bool
+    use_legacy_preset: bool
+    legacy_uma_position_1: int
+    legacy_uma_position_2: int
+    legacy_uma_position_3: int
+    legacy_uma_position_4: int
+    legacy_uma_position_5: int
+    legacy_uma_position_6: int
+    legacy_uma_position_7: int
     # 剧本相关配置
     scenario_config: ScenarioConfig
     # 限时: 富士奇石的表演秀
@@ -90,7 +98,15 @@ def build_task(task_execute_mode: TaskExecuteMode, task_type: int,
         [0.11, 0.10, 0.12, 0.09],
         [0.03, 0.05, 0.15, 0.09]
     ])
-    
+    td.use_legacy_preset = attachment_data.get('use_legacy_preset', False)
+    td.legacy_uma_position_1 = attachment_data.get('legacy_uma_position_1', 1)
+    td.legacy_uma_position_2 = attachment_data.get('legacy_uma_position_2', 2)
+    td.legacy_uma_position_3 = attachment_data.get('legacy_uma_position_3', 3)
+    td.legacy_uma_position_4 = attachment_data.get('legacy_uma_position_4', 4)
+    td.legacy_uma_position_5 = attachment_data.get('legacy_uma_position_5', 5)
+    td.legacy_uma_position_6 = attachment_data.get('legacy_uma_position_6', 6)
+    td.legacy_uma_position_7 = attachment_data.get('legacy_uma_position_7', 7)
+
     td.cultivate_result = {}
     # 剧本相关设置
     td.scenario_config = ScenarioConfig(

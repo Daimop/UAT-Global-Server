@@ -591,13 +591,60 @@ def script_umamusume_select(ctx: UmamusumeContext):
 
 
 def script_extend_umamusume_select(ctx: UmamusumeContext):
-    ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_AUTO_SELECT)
-    time.sleep(1)
-    ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_INCLUDE_GUEST)
-    time.sleep(1)
-    ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_CONFIRM)
-    time.sleep(1)
-    ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_NEXT)
+    # Check if using legacy preset (default is False = auto-select)
+    use_legacy = getattr(ctx.cultivate_detail, 'use_legacy_preset', False)
+
+    if use_legacy:
+        # Get selected positions (defaults: 1-7)
+        positions = [
+            getattr(ctx.cultivate_detail, 'legacy_uma_position_1', 1),
+            getattr(ctx.cultivate_detail, 'legacy_uma_position_2', 2),
+            getattr(ctx.cultivate_detail, 'legacy_uma_position_3', 3),
+            getattr(ctx.cultivate_detail, 'legacy_uma_position_4', 4),
+            getattr(ctx.cultivate_detail, 'legacy_uma_position_5', 5),
+            getattr(ctx.cultivate_detail, 'legacy_uma_position_6', 6),
+            getattr(ctx.cultivate_detail, 'legacy_uma_position_7', 7)
+        ]
+
+        # Map positions to coordinates (row 1: y=777, row 2: y=930)
+        uma_positions = {
+            1: (220, 777),
+            2: (353, 777),
+            3: (485, 777),
+            4: (618, 777),
+            5: (90, 930),
+            6: (224, 930),
+            7: (358, 930),
+            8: (492, 930),
+            9: (626, 930)
+        }
+
+        # Add Legacy buttons coordinates
+        add_legacy_buttons = [
+            (118, 788),
+            (451, 796)
+        ]
+
+        # Legacy preset: manually select umas
+        for i in range(2):
+            ctx.ctrl.click(add_legacy_buttons[i][0], add_legacy_buttons[i][1], f"Add Legacy Uma {i+1}")
+            time.sleep(1)
+            pos = positions[i]
+            ctx.ctrl.click(uma_positions[pos][0], uma_positions[pos][1], f"Select Uma Position {pos}")
+            time.sleep(1)
+            ctx.ctrl.click(365, 1080, f"Confirm Uma {i+1}")
+            time.sleep(1)
+
+        ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_NEXT)
+    else:
+        # Default: auto-select
+        ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_AUTO_SELECT)
+        time.sleep(1)
+        ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_INCLUDE_GUEST)
+        time.sleep(1)
+        ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_CONFIRM)
+        time.sleep(1)
+        ctx.ctrl.click_by_point(TO_CULTIVATE_PREPARE_NEXT)
 
 
 def script_support_card_select(ctx: UmamusumeContext):

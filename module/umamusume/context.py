@@ -32,6 +32,14 @@ class CultivateContextDetail:
     manual_purchase_completed: bool
     final_skill_sweep_active: bool
     user_provided_priority: bool
+    use_legacy_preset: bool
+    legacy_uma_position_1: int
+    legacy_uma_position_2: int
+    legacy_uma_position_3: int
+    legacy_uma_position_4: int
+    legacy_uma_position_5: int
+    legacy_uma_position_6: int
+    legacy_uma_position_7: int
 
     def __init__(self):
         self.expect_attribute = None
@@ -53,6 +61,14 @@ class CultivateContextDetail:
         self.manual_purchase_completed = False
         self.final_skill_sweep_active = False
         self.user_provided_priority = False
+        self.use_legacy_preset = False
+        self.legacy_uma_position_1 = 1
+        self.legacy_uma_position_2 = 2
+        self.legacy_uma_position_3 = 3
+        self.legacy_uma_position_4 = 4
+        self.legacy_uma_position_5 = 5
+        self.legacy_uma_position_6 = 6
+        self.legacy_uma_position_7 = 7
         self.event_overrides = {}
 
     def reset_skill_learn(self):
@@ -119,13 +135,21 @@ def build_context(task: UmamusumeTask, ctrl) -> UmamusumeContext:
             [0.03, 0.05, 0.15, 0.09]
         ])
         detail.compensate_failure = getattr(task.detail, 'compensate_failure', True)
+        detail.use_legacy_preset = getattr(task.detail, 'use_legacy_preset', False)
+        detail.legacy_uma_position_1 = getattr(task.detail, 'legacy_uma_position_1', 1)
+        detail.legacy_uma_position_2 = getattr(task.detail, 'legacy_uma_position_2', 2)
+        detail.legacy_uma_position_3 = getattr(task.detail, 'legacy_uma_position_3', 3)
+        detail.legacy_uma_position_4 = getattr(task.detail, 'legacy_uma_position_4', 4)
+        detail.legacy_uma_position_5 = getattr(task.detail, 'legacy_uma_position_5', 5)
+        detail.legacy_uma_position_6 = getattr(task.detail, 'legacy_uma_position_6', 6)
+        detail.legacy_uma_position_7 = getattr(task.detail, 'legacy_uma_position_7', 7)
         # Event overrides
         try:
             eo = getattr(task.detail, 'event_overrides', {})
             detail.event_overrides = eo if isinstance(eo, dict) else {}
         except Exception:
             detail.event_overrides = {}
-        
+
         ctx.cultivate_detail = detail
     return ctx
 
